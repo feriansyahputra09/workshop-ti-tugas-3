@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cari Cuaca Kota</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    form {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      width: 250px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #weatherResult {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    #weatherResult img {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌤 Cari Cuaca Kota</h1>
+
+  <form id="weatherForm">
+    <input type="text" id="cityInput" placeholder="Masukkan nama kota" required />
+    <button type="submit">Cari Cuaca</button>
+  </form>
+
+  <div id="weatherResult">
+    <p>Masukkan nama kota dan klik "Cari Cuaca"</p>
+  </div>
+
+  <script>
+    const apiKey = "f3322e8cb11c2b3f51278703ca1525a5"; // Ganti dengan API key kamu
+
+    document.getElementById("weatherForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const city = document.getElementById("cityInput").value.trim();
+      const result = document.getElementById("weatherResult");
+
+      if (!city) {
+        result.innerHTML = '<p style="color:red;">Masukkan nama kota terlebih dahulu!</p>';
+        return;
+      }
+
+      result.innerHTML = '<p>Memuat data cuaca...</p>';
+
+      // ✅ Gunakan backtick untuk template string
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=id`)
+        .then(response => {
+          if (!response.ok) throw new Error("Kota tidak ditemukan");
+          return response.json();
+        })
+        .then(data => {
+          const name = data.name;
+          const temp = data.main.temp;
+          const desc = data.weather[0].description;
+          const icon = data.weather[0].icon;
+
+          result.innerHTML = `
+            <h2>${name}</h2>
+            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" />
+            <p><strong>${temp}°C</strong></p>
+            <p style="text-transform: capitalize;">${desc}</p>
+          `;
+        })
+        .catch(error => {
+          // ✅ Gunakan backtick juga di sini
+          result.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        });
+    });
+  </script>
+
+</body>
+</html>
